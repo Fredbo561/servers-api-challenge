@@ -1,8 +1,8 @@
 import { Router, type Request, type Response } from 'express';
 const router = Router();
 
-// import HistoryService from '../../service/historyService.js';
-// import WeatherService from '../../service/weatherService.js';
+import HistoryService from '../../service/historyService.js';
+import WeatherService from '../../service/weatherService.js';
 
 // TODO: POST Request with city name to retrieve weather data
 router.post('/', (req: Request, res: Response) => {
@@ -25,16 +25,34 @@ router.post('/', (req: Request, res: Response) => {
 
 // TODO: GET search history
 router.get('/history', async (_req: Request, res: Response) => {
-    HistoryService.getCities()
-      .then((data) => {
-        return res.json(data);
-      })
-      .catch((err) => {
-        res.status(500).json(err);
-      });
-  });
+  try { 
+      const savedStates = await HistoryService.getCities();
+      res.json(savedStates);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
+  //     .then((data) => {
+  //       return res.json(data);
+  //     })
+  //     catch (err) {
+  //       res.status(500).json(err);
+  //     };
+  // });
 
 // * BONUS TODO: DELETE city from search history
-router.delete('/history/:id', async (req: Request, res: Response) => {});
+router.delete('/history/:id', async (req: Request, res: Response) => {
+  try {
+    if (!req.params.id) {
+      res.status(400).json({ msg: 'State id is required' });
+    }
+    await HistoryService.removeState(req.params.id);
+    res.json({ success: 'State successfully removed from search history' });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
 
 export default router;
