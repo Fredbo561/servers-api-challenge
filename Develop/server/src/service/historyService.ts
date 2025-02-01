@@ -15,12 +15,12 @@ class City {
 // TODO: Complete the HistoryService class
 class HistoryService {
   // TODO: Define a read method that reads from the searchHistory.json file
-  // private async read() {
-  //   return await fs.readFile('db/db.json', {
-  //     flag: 'a+',
-  //     encoding: 'utf8',
-  //   });
-  // }
+  private async read() {
+    return await fs.readFile('db/db.json', {
+      flag: 'a+',
+      encoding: 'utf8',
+    });
+  }
   // TODO: Define a write method that writes the updated cities array to the searchHistory.json file
   private async write(cities: City[]) {
     return await fs.writeFile('db/db.json', JSON.stringify(cities, null, '\t'));
@@ -41,9 +41,17 @@ class HistoryService {
     });
   }
   // TODO Define an addCity method that adds a city to the searchHistory.json file
-  async addCity(city: string) {}
+  async addCity(city: string) {
+    if (!city) {
+      throw new Error('City cannot be blank');
+    }
+  }
   // * BONUS TODO: Define a removeCity method that removes a city from the searchHistory.json file
-  // async removeCity(id: string) {}
+  async removeCity(id: string) {
+    return await this.getCities()
+    .then((cities) => cities.filter((cities) => cities.id !== id))
+    .then((filteredCities) => this.write(filteredCities));
+}
 }
 
 export default new HistoryService();
