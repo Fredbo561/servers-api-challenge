@@ -50,6 +50,7 @@ const fetchWeather = async (cityName: string) => {
   renderCurrentWeather(weatherData.currentWeather);
   renderForecast(weatherData.forecast);
 };
+// renderForecast(weatherData.forecast);
 
 const fetchSearchHistory = async () => {
   const history = await fetch('/api/weather/history', {
