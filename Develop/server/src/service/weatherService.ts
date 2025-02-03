@@ -164,17 +164,17 @@
 
 // export default new WeatherService();
 
-import dayjs, { type Dayjs } from 'dayjs';
+import { type Dayjs } from 'dayjs';
 import dotenv from 'dotenv';
 dotenv.config();
 
 // Coordinates interface
 interface Coordinates {
-  name: string;
+  // name: string;
   lat: number;
   lon: number;
-  country: string;
-  state: string;
+  // country: string;
+  // state: string;
 }
 
 // Weather class definition
@@ -219,7 +219,7 @@ class WeatherService {
 
   // Fetch location data by city name
   private async fetchLocationData(query: string) {
-    const response = await fetch(this.buildGeocodeQuery(query));
+    const response = await fetch(query);
     if (!response.ok) {
       throw new Error('Failed to fetch location data.');
     }
@@ -230,12 +230,13 @@ class WeatherService {
   // Destructure location data to get coordinates
   private destructureLocationData(locationData: Coordinates[]): Coordinates {
     const { lat, lon } = locationData[0]; // Assuming the first result is the best match
-    return { lat, lon };
+    let coordinates: Coordinates = {lat, lon}
+    return coordinates;
   }
 
   // Build the geocode query URL
-  private buildGeocodeQuery(city: string): string {
-    return `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${this.apiKey}`;
+  private buildGeocodeQuery(): string {
+    return `http://api.openweathermap.org/geo/1.0/direct?q=${this.city}&limit=5&appid=${this.apiKey}`;
   }
 
   // Build the weather query URL
@@ -302,7 +303,8 @@ class WeatherService {
 
   // Complete method to get weather for the city
   async getWeatherForCity(city: string) {
-    const coordinates = await this.fetchLocationData(city);
+    this.city = city 
+    const coordinates = await this.fetchLocationData(this.buildGeocodeQuery());
     const weatherData = await this.fetchWeatherData(coordinates);
     const currentWeather = this.parseCurrentWeather(weatherData);
     const forecastData = await this.fetchForecastData(coordinates);
